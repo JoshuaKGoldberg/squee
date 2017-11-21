@@ -3,6 +3,7 @@
     "rules": {
         "array-type": [true, "array"],
         "linebreak-style": false,
+        "no-any": false,
         "no-magic-numbers": [true, -1, 0, 1, 2, 3],
         "max-line-length": [true, 140],
         "member-ordering": false,

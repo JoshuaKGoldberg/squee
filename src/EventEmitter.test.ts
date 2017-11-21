@@ -37,8 +37,8 @@ describe("EventEmitter", () => {
             // Arrange
             const emitter = new EventEmitter();
             const eventName = "event-name";
-            const firstListener = jasmine.createSpy("");
-            const secondListener = jasmine.createSpy("");
+            const firstListener = jasmine.createSpy("first");
+            const secondListener = jasmine.createSpy("second");
             const args = [{}, {}];
 
             emitter.on(eventName, firstListener);
@@ -101,8 +101,8 @@ describe("EventEmitter", () => {
             // Arrange
             const emitter = new EventEmitter();
             const eventName = "event-name";
-            const firstListener = jasmine.createSpy("");
-            const secondListener = jasmine.createSpy("");
+            const firstListener = jasmine.createSpy("first");
+            const secondListener = jasmine.createSpy("second");
             const args = [{}, {}];
 
             emitter.onFirst(eventName, firstListener);
@@ -170,6 +170,25 @@ describe("EventEmitter", () => {
     });
 
     describe("off", () => {
+        it("clears event listener when the listener is registered multiple times", () => {
+            // Arrange
+            const emitter = new EventEmitter();
+            const eventName = "event-name";
+            const listener = jasmine.createSpy("");
+
+            emitter.on(eventName, listener);
+            emitter.on(eventName, listener);
+            emitter.onFirst(eventName, listener);
+            emitter.onFirst(eventName, listener);
+
+            // Act
+            emitter.off(eventName, listener);
+            emitter.emit(eventName);
+
+            // Assert
+            expect(listener).not.toHaveBeenCalled();
+        });
+
         it("clears just the passed event listener when passed an event name and listener", () => {
             // Arrange
             const emitter = new EventEmitter();
@@ -193,8 +212,8 @@ describe("EventEmitter", () => {
             // Arrange
             const emitter = new EventEmitter();
             const eventName = "event-name";
-            const secondListener = jasmine.createSpy("");
-            const firstListener = jasmine.createSpy("");
+            const secondListener = jasmine.createSpy("second");
+            const firstListener = jasmine.createSpy("first");
 
             emitter.on(eventName, secondListener);
             emitter.on(eventName, firstListener);
@@ -213,8 +232,8 @@ describe("EventEmitter", () => {
             const emitter = new EventEmitter();
             const firstEventName = "first-event";
             const secondEventName = "second-event";
-            const secondListener = jasmine.createSpy("");
-            const firstListener = jasmine.createSpy("");
+            const secondListener = jasmine.createSpy("second");
+            const firstListener = jasmine.createSpy("first");
 
             emitter.on(firstEventName, secondListener);
             emitter.on(secondEventName, firstListener);
@@ -227,6 +246,18 @@ describe("EventEmitter", () => {
             // Assert
             expect(firstListener).not.toHaveBeenCalled();
             expect(secondListener).not.toHaveBeenCalled();
+        });
+
+        it("throws an error when an unregistered listener is passed", () => {
+            // Arrange
+            const emitter = new EventEmitter();
+            const eventName = "event-name";
+
+            // Act
+            const action = () => emitter.off(eventName, jasmine.createSpy(""));
+
+            // Assert
+            expect(action).toThrow(`Tried to remove a non-existent listener for event name '${eventName}'.`);
         });
     });
 
@@ -252,7 +283,7 @@ describe("EventEmitter", () => {
 
             // Act
             const action = emitter.waitFor(eventName);
-            emitter.emit(eventName);
+            emitter.emit(eventName, arg);
 
             // Assert
             expect(await action).toBe(arg);
@@ -268,7 +299,7 @@ describe("EventEmitter", () => {
 
             // Act
             const action = emitter.waitFor(eventName);
-            emitter.emit(eventName);
+            emitter.emit(eventName, arg);
 
             // Assert
             expect(await action).toBe(arg);
@@ -298,7 +329,7 @@ describe("EventEmitter", () => {
             // Act
             emitter.emit("bad");
             const action = emitter.waitForFirst(eventName);
-            emitter.emit(eventName);
+            emitter.emit(eventName, arg);
 
             // Assert
             expect(await action).toBe(arg);
