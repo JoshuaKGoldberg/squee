@@ -139,11 +139,11 @@ describe("EventEmitter", () => {
             const listener = jasmine.createSpy();
             const args = [{}, {}];
 
-            emitter.emit(eventName, "bad");
+            emitter.emit(eventName, ...args);
             emitter.onFirst(eventName, listener);
 
             // Act
-            emitter.emit(eventName, ...args);
+            emitter.emit(eventName, "bad");
 
             // Assert
             expect(listener).toHaveBeenCalledWith(...args);
@@ -174,11 +174,30 @@ describe("EventEmitter", () => {
 
             emitter.emit(eventName, "bad");
             emitter.onFirst(eventName, listener);
-            emitter.off(eventName, listener);
+            emitter.off(eventName);
             emitter.onFirst(eventName, listener);
 
             // Act
             emitter.emit(eventName, ...args);
+
+            // Assert
+            expect(listener).toHaveBeenCalledWith(...args);
+        });
+
+        it("uses the original first event when the listener is cleared with off then called again", () => {
+            // Arrange
+            const emitter = new EventEmitter();
+            const eventName = "event-name";
+            const listener = jasmine.createSpy();
+            const args = [{}, {}];
+
+            emitter.emit(eventName, ...args);
+            emitter.onFirst(eventName, listener);
+            emitter.off(eventName, listener);
+            emitter.onFirst(eventName, listener);
+
+            // Act
+            emitter.emit(eventName, "bad");
 
             // Assert
             expect(listener).toHaveBeenCalledWith(...args);
@@ -351,6 +370,26 @@ describe("EventEmitter", () => {
 
             // Assert
             expect(await action).toBe(arg);
+        });
+
+        it("doesn't (quickly) resolve when the event is fired before registration", async () => {
+            // Arrange
+            const emitter = new EventEmitter();
+            const eventName = "event-name";
+            let resolved = false;
+
+            emitter.emit(eventName);
+
+            // Act
+            // tslint:disable-next-line no-floating-promises
+            emitter.waitFor(eventName)
+                .then(() => {
+                    resolved = true;
+                });
+
+            // Assert
+            await Promise.resolve();
+            expect(resolved).toBe(false);
         });
 
         it("doesn't (quickly) resolve after the event is cleared with off", async () => {

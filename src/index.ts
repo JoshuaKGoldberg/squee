@@ -1,4 +1,3 @@
-
 /**
  * Removes any instances of an item from an array.
  *
@@ -20,6 +19,16 @@ const removeFromArray = <TItem>(array: TItem[], item: TItem): boolean => {
 
     return removed;
 };
+
+/**
+ * Creates a new, blank registration.
+ *
+ * @returns A new, blank registration.
+ */
+const createNewRegistration = () => ({
+    firstOnlyListeners: [],
+    listeners: [],
+});
 
 /**
  * Listeners and first args registered to events, keyed by event name.
@@ -63,13 +72,30 @@ type IListenerRegistrations = IListener[];
 type IListener = (...args: any[]) => void;
 
 /**
- * Hub for triggerable application events.
+ * Submits application events.
+ *
+ * @template TTypes   Event names linked to their arg types.
  */
-export class EventEmitter<TTypes = any> {
+export interface IEventSubmitter<TTypes = any> {
+    /**
+     * Emits an event, along with any amount of additional information.
+     *
+     * @param eventName   Name of an event.
+     * @param args   Any additional information for the event.
+     */
+    emit<TEventName extends keyof TTypes>(eventName: TEventName, ...args: TTypes[TEventName][]): void;
+}
+
+/**
+ * Hub for triggerable application events.
+ *
+ * @template TTypes   Event names linked to their arg types.
+ */
+export class EventEmitter<TTypes = any> implements IEventSubmitter<TTypes> {
     /**
      * Listeners and first args registered to events.
      */
-    private readonly registrations: IEventRegistrations<keyof TTypes> = {};
+    private registrations: IEventRegistrations<keyof TTypes> = {};
 
     /**
      * Binds an event listener to an event name.
@@ -90,8 +116,13 @@ export class EventEmitter<TTypes = any> {
      * @remarks If the event name was already fired, it's immediately called with the args from the first event.
      */
     public onFirst<TEventName extends keyof TTypes>(eventName: TEventName, listener: (...args: TTypes[TEventName][]) => void): void {
-        this.safelyGetRegistration(eventName)
-            .firstOnlyListeners.push(listener);
+        const registration = this.safelyGetRegistration(eventName);
+
+        if (registration.firstArgs !== undefined) {
+            listener(...registration.firstArgs);
+        }
+
+        registration.firstOnlyListeners.push(listener);
     }
 
     /**
@@ -105,20 +136,16 @@ export class EventEmitter<TTypes = any> {
      */
     public off<TEventName extends keyof TTypes>(eventName?: TEventName, listener?: (...args: TTypes[TEventName][]) => void): void {
         if (eventName === undefined) {
-            for (const registeredEventName of Object.keys(this.registrations) as (keyof TTypes)[]) {
-                this.off(registeredEventName);
-            }
+            this.registrations = {};
+            return;
+        }
 
+        if (listener === undefined) {
+            this.registrations[eventName] = createNewRegistration();
             return;
         }
 
         const registration = this.safelyGetRegistration(eventName);
-
-        if (listener === undefined) {
-            registration.firstOnlyListeners.length = 0;
-            registration.listeners.length = 0;
-            return;
-        }
 
         const wasInListeners = removeFromArray(registration.listeners, listener);
         const wasInFirstOnlyListeners = removeFromArray(registration.firstOnlyListeners, listener);
@@ -135,10 +162,7 @@ export class EventEmitter<TTypes = any> {
      * @param args   Any additional information for the event.
      */
     public emit<TEventName extends keyof TTypes>(eventName: TEventName, ...args: TTypes[TEventName][]): void {
-        const registration = this.registrations[eventName];
-        if (registration === undefined) {
-            return;
-        }
+        const registration = this.safelyGetRegistration(eventName);
 
         if (registration.firstArgs === undefined) {
             for (const firstOnlyListener of registration.firstOnlyListeners) {
@@ -196,13 +220,12 @@ export class EventEmitter<TTypes = any> {
      */
     private safelyGetRegistration<TEventName extends keyof TTypes>(eventName: TEventName): IRegistration {
         if (this.registrations[eventName] === undefined) {
-            this.registrations[eventName] = {
-                firstOnlyListeners: [],
-                listeners: [],
-            };
+            this.registrations[eventName] = createNewRegistration();
         }
 
         // See https://github.com/Microsoft/TypeScript/issues/20199
         return this.registrations[eventName] as IRegistration;
     }
 }
+
+export const Squee = EventEmitter;

@@ -20,6 +20,8 @@ emitter.on("noise", sound => console.log(`${sound}!`));
 emitter.emit("noise", "MOO"); // "MOO!"
 ```
 
+_`EventEmitter` is also exported under the name `Squee`._
+
 Squee also ships with `dist/(amd|system)-(es3|es2015).js` files.
 So, to use a version that works in all browsers with RequireJS, use `dist/amd-es3.js`.
 
@@ -92,6 +94,10 @@ emitter.emit("taste", 9000);
 emitter.emit("unknown");
 emitter.emit("noise", true);
 ```
+
+Squee also exports an `IEventSubmitter` interface that only contains the `emit` operation.
+Use it if you'd like to restrict which application components may send events.
+`EventEmitter` implements the `IEventSubmitter` interface.
 
 Note that until TypeScript supports variadic kinds ([issue here](https://github.com/Microsoft/TypeScript/issues/5453)), only one type is supported for all arguments.
 If you need complex objects it's probably semantically more clear to pass an object with multiple fields anyway.
