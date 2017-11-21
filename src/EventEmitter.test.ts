@@ -1,4 +1,4 @@
-import { EventEmitter } from "./EventEmitter";
+import { EventEmitter } from "./index";
 
 describe("EventEmitter", () => {
     describe("on", () => {
@@ -6,7 +6,7 @@ describe("EventEmitter", () => {
             // Arrange
             const emitter = new EventEmitter();
             const eventName = "event-name";
-            const listener = jasmine.createSpy("");
+            const listener = jasmine.createSpy();
 
             emitter.on(eventName, listener);
 
@@ -21,7 +21,7 @@ describe("EventEmitter", () => {
             // Arrange
             const emitter = new EventEmitter();
             const eventName = "event-name";
-            const listener = jasmine.createSpy("");
+            const listener = jasmine.createSpy();
             const args = [{}, {}];
 
             emitter.on(eventName, listener);
@@ -52,11 +52,27 @@ describe("EventEmitter", () => {
             expect(secondListener).toHaveBeenCalledWith(...args);
         });
 
+        it("triggers a listener twice when an event is fired after attaching the listener twice", () => {
+            // Arrange
+            const emitter = new EventEmitter();
+            const eventName = "event-name";
+            const listener = jasmine.createSpy();
+
+            emitter.on(eventName, listener);
+            emitter.on(eventName, listener);
+
+            // Act
+            emitter.emit(eventName);
+
+            // Assert
+            expect(listener).toHaveBeenCalledTimes(2);
+        });
+
         it("doesn't trigger a listener when an event is fired before attaching the listener", () => {
             // Arrange
             const emitter = new EventEmitter();
             const eventName = "event-name";
-            const listener = jasmine.createSpy("");
+            const listener = jasmine.createSpy();
 
             // Act
             emitter.emit(eventName);
@@ -69,7 +85,7 @@ describe("EventEmitter", () => {
             // Arrange
             const emitter = new EventEmitter();
             const eventName = "event-name";
-            const listener = jasmine.createSpy("");
+            const listener = jasmine.createSpy();
             emitter.on(eventName, listener);
 
             // Act
@@ -86,7 +102,7 @@ describe("EventEmitter", () => {
             // Arrange
             const emitter = new EventEmitter();
             const eventName = "event-name";
-            const listener = jasmine.createSpy("");
+            const listener = jasmine.createSpy();
 
             emitter.onFirst(eventName, listener);
 
@@ -120,7 +136,7 @@ describe("EventEmitter", () => {
             // Arrange
             const emitter = new EventEmitter();
             const eventName = "event-name";
-            const listener = jasmine.createSpy("");
+            const listener = jasmine.createSpy();
             const args = [{}, {}];
 
             emitter.emit(eventName, "bad");
@@ -137,7 +153,7 @@ describe("EventEmitter", () => {
             // Arrange
             const emitter = new EventEmitter();
             const eventName = "event-name";
-            const listener = jasmine.createSpy("");
+            const listener = jasmine.createSpy();
 
             emitter.onFirst(eventName, listener);
             emitter.off(eventName, listener);
@@ -153,7 +169,7 @@ describe("EventEmitter", () => {
             // Arrange
             const emitter = new EventEmitter();
             const eventName = "event-name";
-            const listener = jasmine.createSpy("");
+            const listener = jasmine.createSpy();
             const args = [{}, {}];
 
             emitter.emit(eventName, "bad");
@@ -174,7 +190,7 @@ describe("EventEmitter", () => {
             // Arrange
             const emitter = new EventEmitter();
             const eventName = "event-name";
-            const listener = jasmine.createSpy("");
+            const listener = jasmine.createSpy();
 
             emitter.on(eventName, listener);
             emitter.on(eventName, listener);
@@ -193,8 +209,8 @@ describe("EventEmitter", () => {
             // Arrange
             const emitter = new EventEmitter();
             const eventName = "event-name";
-            const permanentListener = jasmine.createSpy("");
-            const temporaryListener = jasmine.createSpy("");
+            const permanentListener = jasmine.createSpy();
+            const temporaryListener = jasmine.createSpy();
 
             emitter.on(eventName, permanentListener);
             emitter.on(eventName, temporaryListener);
@@ -254,7 +270,9 @@ describe("EventEmitter", () => {
             const eventName = "event-name";
 
             // Act
-            const action = () => emitter.off(eventName, jasmine.createSpy(""));
+            const action = (): void => {
+                emitter.off(eventName, jasmine.createSpy());
+            };
 
             // Assert
             expect(action).toThrow(`Tried to remove a non-existent listener for event name '${eventName}'.`);
@@ -342,6 +360,7 @@ describe("EventEmitter", () => {
             let resolved = false;
 
             // Act
+            // tslint:disable-next-line no-floating-promises
             emitter.waitForFirst(eventName)
                 .then(() => {
                     resolved = true;

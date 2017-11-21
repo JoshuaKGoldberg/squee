@@ -4,7 +4,16 @@
   "description": "Super quick event emitter!",
   "main": "lib/index.js",
   "scripts": {
-    "test": "jest"
+    "clean": "del-cli dist/* lib/*",
+    "compile": "tsc --project tsconfig.json",
+    "dist": "run-p dist:amd-es3 dist:amd-es2015 dist:system-es3 dist:system-es2015",
+    "dist:amd-es3": "tsc --module amd --outFile dist/squee-amd-es3.js --project tsconfig.json --target es3",
+    "dist:amd-es2015": "tsc --module amd --outFile dist/squee-amd-es2015.js --project tsconfig.json --target es2015",
+    "dist:system-es3": "tsc --module system --outFile dist/squee-system-es3.js --project tsconfig.json --target es3",
+    "dist:system-es2015": "tsc --module system --outFile dist/squee-system-es2015.js --project tsconfig.json --target es2015",
+    "lint": "tslint --config tslint.json --format stylish --project tsconfig.json",
+    "test": "jest",
+    "verify": "npm run clean && npm run compile && npm run lint && npm run test && npm run dist"
   },
   "repository": {
     "type": "git",
@@ -39,8 +48,10 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "^21.1.6",
+    "@types/jest": "^21.1.7",
+    "del-cli": "^1.1.0",
     "jest": "^21.2.1",
+    "npm-run-all": "^4.1.2",
     "ts-jest": "^21.2.3",
     "tslint": "^5.8.0",
     "tsutils": "^2.12.2",

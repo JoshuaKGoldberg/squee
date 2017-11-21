@@ -5,13 +5,15 @@
         "linebreak-style": false,
         "no-any": false,
         "no-magic-numbers": [true, -1, 0, 1, 2, 3],
+        "no-redundant-jsdoc": false,
         "max-line-length": [true, 140],
         "member-ordering": false,
         "newline-before-return": false,
         "no-import-side-effect": false,
         "no-submodule-imports": false,
-        "no-unsafe-any": false,
         "prefer-function-over-method": false,
+        "promise-function-async": false,
+        "strict-type-predicates": false,
         "typedef": false
     }
 }
