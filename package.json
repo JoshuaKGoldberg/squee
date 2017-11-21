@@ -1,0 +1,48 @@
+{
+  "name": "squee",
+  "version": "0.0.1",
+  "description": "Super quick event emitter!",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joshuakgoldberg/squee.git"
+  },
+  "keywords": [
+    "event",
+    "emitter",
+    "super",
+    "quick",
+    "squee",
+    "yippee",
+    "hooray"
+  ],
+  "author": "Josh Goldberg <joshuakgoldberg@outlook.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joshuakgoldberg/squee/issues"
+  },
+  "homepage": "https://github.com/joshuakgoldberg/squee#readme",
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ]
+  },
+  "devDependencies": {
+    "@types/jest": "^21.1.6",
+    "ts-jest": "^21.2.3",
+    "tslint": "^5.8.0",
+    "tsutils": "^2.12.2",
+    "typescript": "^2.6.1"
+  }
+}

@@ -1,0 +1,16 @@
+{
+    "extends": ["tslint:all"],
+    "rules": {
+        "array-type": [true, "array"],
+        "linebreak-style": false,
+        "no-magic-numbers": [true, -1, 0, 1, 2, 3],
+        "max-line-length": [true, 140],
+        "member-ordering": false,
+        "newline-before-return": false,
+        "no-import-side-effect": false,
+        "no-submodule-imports": false,
+        "no-unsafe-any": false,
+        "prefer-function-over-method": false,
+        "typedef": false
+    }
+}
