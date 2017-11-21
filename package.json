@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "@types/jest": "^21.1.6",
+    "jest": "^21.2.1",
     "ts-jest": "^21.2.3",
     "tslint": "^5.8.0",
     "tsutils": "^2.12.2",
