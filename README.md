@@ -1,4 +1,7 @@
 # _Squee!_
+[![Build Status](https://travis-ci.org/joshuakgoldberg/squee.svg?branch=master)](https://travis-ci.org/joshuakgoldberg/squee)
+[![npm version](https://badge.fury.io/js/squee.svg)](https://www.npmjs.com/package/squee)
+[![Downloads](https://img.shields.io/npm/dm/squee.svg)](https://www.npmjs.com/package/squee)
 
 💨✨ _**S**uper **Qu**ick **E**vent **E**mitters!_ ✨💨
 
@@ -99,7 +102,7 @@ Squee also exports an `IEventSubmitter` interface that only contains the `emit` 
 Use it if you'd like to restrict which application components may send events.
 `EventEmitter` implements the `IEventSubmitter` interface.
 
-Note that until TypeScript supports variadic kinds ([issue here](https://github.com/Microsoft/TypeScript/issues/5453)), only one type is supported for all arguments.
+Note that until TypeScript supports variadic kinds ([issue here](https://github.com/joshuakgoldberg/squee/issues/5453)), only one type is supported for all arguments.
 If you need complex objects it's probably semantically more clear to pass an object with multiple fields anyway.
 
 ## API
