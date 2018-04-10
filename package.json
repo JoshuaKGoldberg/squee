@@ -1,6 +1,6 @@
 {
   "name": "squee",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Super quick event emitter!",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",

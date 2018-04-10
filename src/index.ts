@@ -87,6 +87,58 @@ export interface IEventSubmitter<TTypes = any> {
 }
 
 /**
+ * Receives application events.
+ * 
+ * @template TTypes   Event names linked to their arg types.
+ */
+export interface IEventReceiver<TTypes = any> {
+    /**
+     * Binds an event listener to an event name.
+     *
+     * @param eventName   Name of an event.
+     * @param listener   Listener for the event.
+     */
+    on<TEventName extends keyof TTypes>(eventName: TEventName, listener: (...args: TTypes[TEventName][]) => void): void;
+
+    /**
+     * Binds an event listener to the first time an event name.
+     *
+     * @param eventName   Name of an event.
+     * @param listener   Listener for the event.
+     * @remarks If the event name was already fired, it's immediately called with the args from the first event.
+     */
+    onFirst<TEventName extends keyof TTypes>(eventName: TEventName, listener: (...args: TTypes[TEventName][]) => void): void;
+
+    /**
+     * Removes an event listener from an event name.
+     * If no listener is provided, it removes all listeners for that event name.
+     * If no event name is provided, it removes all listeners for all event names.
+     *
+     * @param eventName   Name of an event, if not all events.
+     * @param listener   Listener for the event, if not all listeners for the event(s).
+     * @remarks Throws an error if the listener wasn't added for that event name.
+     */
+    off<TEventName extends keyof TTypes>(eventName?: TEventName, listener?: (...args: TTypes[TEventName][]) => void): void;
+
+    /**
+     * Creates a Promise to be resolved the next time an event is fired.
+     *
+     * @param eventName   Name of an event.
+     * @returns A Promise to be resolved with the first object passed with the event.
+     */
+    waitFor<TEventName extends keyof TTypes>(eventName: TEventName): Promise<TTypes[TEventName]>;
+
+    /**
+     * Creates a Promise to be resolved the first time an event is fired.
+     *
+     * @param eventName   Name of an event.
+     * @returns A Promise to be resolve with the first object passed with the first event.
+     * @remarks If the event name was already fired, it's immediately resolved with the args from the first event.
+     */
+    waitForFirst<TEventName extends keyof TTypes>(eventName: TEventName): Promise<TTypes[TEventName]>;
+}
+
+/**
  * Hub for triggerable application events.
  *
  * @template TTypes   Event names linked to their arg types.
