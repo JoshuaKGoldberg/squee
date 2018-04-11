@@ -97,6 +97,23 @@ describe("EventEmitter", () => {
         });
     });
 
+    describe("onAny", () => {
+        it("adds a listener called on events with the event name and args", () => {
+            // Arrange
+            const emitter = new EventEmitter();
+            const eventName = "event-name";
+            const args = [{}, {}];
+            const listener = jasmine.createSpy();
+            emitter.onAny(listener);
+
+            // Act
+            emitter.emit(eventName, ...args);
+
+            // Assert
+            expect(listener).toHaveBeenCalledWith(eventName, ...args);
+        });
+    });
+
     describe("onFirst", () => {
         it("triggers a listener when an event is first fired after attaching the listener", () => {
             // Arrange
