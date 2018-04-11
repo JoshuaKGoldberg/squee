@@ -1,5 +1,5 @@
 # _Squee!_
-[![Build Status](https://travis-ci.org/joshuakgoldberg/squee.svg?branch=master)](https://travis-ci.org/joshuakgoldberg/squee)
+[![Build Status](https://travis-ci.org/JoshuaKGoldberg/squee.svg?branch=master)](https://travis-ci.org/JoshuaKGoldberg/squee)
 [![npm version](https://badge.fury.io/js/squee.svg)](https://www.npmjs.com/package/squee)
 [![Downloads](https://img.shields.io/npm/dm/squee.svg)](https://www.npmjs.com/package/squee)
 
@@ -107,7 +107,7 @@ If you need complex objects it's probably semantically more clear to pass an obj
 
 ## API
 
-#### `on`
+### `on`
 
 Binds an event listener to an event name.
 
@@ -116,7 +116,7 @@ Parameters:
 * `eventName: string`
 * `listener: (...args: any[]) => void`
 
-#### `off`
+### `off`
 
 Removes an event listener from an event name.
 If no listener is provided, it removes _all_ listeners for that event name.
@@ -128,7 +128,16 @@ Parameters:
 
 Throws an error if the listener wasn't added for that event name.
 
-#### `emit`
+### `onAny`
+
+Binds an event listener to all events.
+`onAny` listeners are fired after all events and receive the event name followed by any event arguments.
+
+Parameters:
+
+* `listener: (eventName: string, ...args: any[]) => void`
+
+### `emit`
 
 Emits an event, along with any amount of additional information.
 
@@ -137,7 +146,7 @@ Parameters:
 * `eventName: string`
 * `...args: any[]`
 
-#### `waitFor`
+### `waitFor`
 
 Creates a `Promise` to be resolved the next time an event is fired.
 The `Promise` is resolved with the `args` passed with the event.
@@ -146,7 +155,7 @@ Parameters:
 
 * `eventName: string`
 
-#### `waitForFirst`
+### `waitForFirst`
 
 Creates a `Promise` to be resolved once an event has fired.
 If the event was already fired, it resolves immediately.

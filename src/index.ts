@@ -88,7 +88,7 @@ export interface IEventSubmitter<TTypes = any> {
 
 /**
  * Receives application events.
- * 
+ *
  * @template TTypes   Event names linked to their arg types.
  */
 export interface IEventReceiver<TTypes = any> {
@@ -108,6 +108,13 @@ export interface IEventReceiver<TTypes = any> {
      * @remarks If the event name was already fired, it's immediately called with the args from the first event.
      */
     onFirst<TEventName extends keyof TTypes>(eventName: TEventName, listener: (...args: TTypes[TEventName][]) => void): void;
+
+    /**
+     * Binds an event listener to all events.
+     *
+     * @param listener   Called on any event with the event name and args.
+     */
+    onAny(listener: <TEventName extends keyof TTypes>(eventName: TEventName, ...args: TTypes[TEventName][]) => void): void;
 
     /**
      * Removes an event listener from an event name.
@@ -145,6 +152,11 @@ export interface IEventReceiver<TTypes = any> {
  */
 export class EventEmitter<TTypes = any> implements IEventSubmitter<TTypes> {
     /**
+     * Listeners to fire on all events.
+     */
+    private readonly anyRegistrations: IListener[] = [];
+
+    /**
      * Listeners and first args registered to events.
      */
     private registrations: IEventRegistrations<keyof TTypes> = {};
@@ -175,6 +187,15 @@ export class EventEmitter<TTypes = any> implements IEventSubmitter<TTypes> {
         }
 
         registration.firstOnlyListeners.push(listener);
+    }
+
+    /**
+     * Binds an event listener to all events.
+     *
+     * @param listener   Called on any event with the event name and args.
+     */
+    public onAny(listener: <TEventName extends keyof TTypes>(eventName: TEventName, ...args: TTypes[TEventName][]) => void): void {
+        this.anyRegistrations.push(listener);
     }
 
     /**
@@ -222,10 +243,15 @@ export class EventEmitter<TTypes = any> implements IEventSubmitter<TTypes> {
             }
 
             registration.firstArgs = args;
+            registration.firstOnlyListeners = [];
         }
 
         for (const listener of registration.listeners) {
             listener(...args);
+        }
+
+        for (const listener of this.anyRegistrations) {
+            listener(eventName, ...args);
         }
     }
 
@@ -275,7 +301,7 @@ export class EventEmitter<TTypes = any> implements IEventSubmitter<TTypes> {
             this.registrations[eventName] = createNewRegistration();
         }
 
-        // See https://github.com/Microsoft/TypeScript/issues/20199
+        // See https://github.com/Microsoft/TypeScript/issues/10530
         return this.registrations[eventName] as IRegistration;
     }
 }
