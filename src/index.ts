@@ -83,7 +83,7 @@ export interface IEventSubmitter<TTypes = any> {
      * @param eventName   Name of an event.
      * @param args   Any additional information for the event.
      */
-    emit<TEventName extends keyof TTypes>(eventName: TEventName, ...args: TTypes[TEventName][]): void;
+    emit<TEventName extends Extract<keyof TTypes, string>>(eventName: TEventName, ...args: TTypes[TEventName][]): void;
 }
 
 /**
@@ -98,7 +98,7 @@ export interface IEventReceiver<TTypes = any> {
      * @param eventName   Name of an event.
      * @param listener   Listener for the event.
      */
-    on<TEventName extends keyof TTypes>(eventName: TEventName, listener: (...args: TTypes[TEventName][]) => void): void;
+    on<TEventName extends Extract<keyof TTypes, string>>(eventName: TEventName, listener: (...args: TTypes[TEventName][]) => void): void;
 
     /**
      * Binds an event listener to the first time an event name.
@@ -107,14 +107,14 @@ export interface IEventReceiver<TTypes = any> {
      * @param listener   Listener for the event.
      * @remarks If the event name was already fired, it's immediately called with the args from the first event.
      */
-    onFirst<TEventName extends keyof TTypes>(eventName: TEventName, listener: (...args: TTypes[TEventName][]) => void): void;
+    onFirst<TEventName extends Extract<keyof TTypes, string>>(eventName: TEventName, listener: (...args: TTypes[TEventName][]) => void): void;
 
     /**
      * Binds an event listener to all events.
      *
      * @param listener   Called on any event with the event name and args.
      */
-    onAny(listener: <TEventName extends keyof TTypes>(eventName: TEventName, ...args: TTypes[TEventName][]) => void): void;
+    onAny(listener: <TEventName extends Extract<keyof TTypes, string>>(eventName: TEventName, ...args: TTypes[TEventName][]) => void): void;
 
     /**
      * Removes an event listener from an event name.
@@ -125,7 +125,7 @@ export interface IEventReceiver<TTypes = any> {
      * @param listener   Listener for the event, if not all listeners for the event(s).
      * @remarks Throws an error if the listener wasn't added for that event name.
      */
-    off<TEventName extends keyof TTypes>(eventName?: TEventName, listener?: (...args: TTypes[TEventName][]) => void): void;
+    off<TEventName extends Extract<keyof TTypes, string>>(eventName?: TEventName, listener?: (...args: TTypes[TEventName][]) => void): void;
 
     /**
      * Creates a Promise to be resolved the next time an event is fired.
@@ -133,7 +133,7 @@ export interface IEventReceiver<TTypes = any> {
      * @param eventName   Name of an event.
      * @returns A Promise to be resolved with the first object passed with the event.
      */
-    waitFor<TEventName extends keyof TTypes>(eventName: TEventName): Promise<TTypes[TEventName]>;
+    waitFor<TEventName extends Extract<keyof TTypes, string>>(eventName: TEventName): Promise<TTypes[TEventName]>;
 
     /**
      * Creates a Promise to be resolved the first time an event is fired.
@@ -142,7 +142,7 @@ export interface IEventReceiver<TTypes = any> {
      * @returns A Promise to be resolve with the first object passed with the first event.
      * @remarks If the event name was already fired, it's immediately resolved with the args from the first event.
      */
-    waitForFirst<TEventName extends keyof TTypes>(eventName: TEventName): Promise<TTypes[TEventName]>;
+    waitForFirst<TEventName extends Extract<keyof TTypes, string>>(eventName: TEventName): Promise<TTypes[TEventName]>;
 }
 
 /**
@@ -159,7 +159,7 @@ export class EventEmitter<TTypes = any> implements IEventSubmitter<TTypes> {
     /**
      * Listeners and first args registered to events.
      */
-    private registrations: IEventRegistrations<keyof TTypes> = {};
+    private registrations: IEventRegistrations<Extract<keyof TTypes, string>> = {};
 
     /**
      * Binds an event listener to an event name.
@@ -167,7 +167,7 @@ export class EventEmitter<TTypes = any> implements IEventSubmitter<TTypes> {
      * @param eventName   Name of an event.
      * @param listener   Listener for the event.
      */
-    public on<TEventName extends keyof TTypes>(eventName: TEventName, listener: (...args: TTypes[TEventName][]) => void): void {
+    public on<TEventName extends Extract<keyof TTypes, string>>(eventName: TEventName, listener: (...args: TTypes[TEventName][]) => void): void {
         this.safelyGetRegistration(eventName)
             .listeners.push(listener);
     }
@@ -179,7 +179,7 @@ export class EventEmitter<TTypes = any> implements IEventSubmitter<TTypes> {
      * @param listener   Listener for the event.
      * @remarks If the event name was already fired, it's immediately called with the args from the first event.
      */
-    public onFirst<TEventName extends keyof TTypes>(eventName: TEventName, listener: (...args: TTypes[TEventName][]) => void): void {
+    public onFirst<TEventName extends Extract<keyof TTypes, string>>(eventName: TEventName, listener: (...args: TTypes[TEventName][]) => void): void {
         const registration = this.safelyGetRegistration(eventName);
 
         if (registration.firstArgs !== undefined) {
@@ -194,7 +194,7 @@ export class EventEmitter<TTypes = any> implements IEventSubmitter<TTypes> {
      *
      * @param listener   Called on any event with the event name and args.
      */
-    public onAny(listener: <TEventName extends keyof TTypes>(eventName: TEventName, ...args: TTypes[TEventName][]) => void): void {
+    public onAny(listener: <TEventName extends Extract<keyof TTypes, string>>(eventName: TEventName, ...args: TTypes[TEventName][]) => void): void {
         this.anyRegistrations.push(listener);
     }
 
@@ -207,7 +207,7 @@ export class EventEmitter<TTypes = any> implements IEventSubmitter<TTypes> {
      * @param listener   Listener for the event, if not all listeners for the event(s).
      * @remarks Throws an error if the listener wasn't added for that event name.
      */
-    public off<TEventName extends keyof TTypes>(eventName?: TEventName, listener?: (...args: TTypes[TEventName][]) => void): void {
+    public off<TEventName extends Extract<keyof TTypes, string>>(eventName?: TEventName, listener?: (...args: TTypes[TEventName][]) => void): void {
         if (eventName === undefined) {
             this.registrations = {};
             return;
@@ -234,7 +234,7 @@ export class EventEmitter<TTypes = any> implements IEventSubmitter<TTypes> {
      * @param eventName   Name of an event.
      * @param args   Any additional information for the event.
      */
-    public emit<TEventName extends keyof TTypes>(eventName: TEventName, ...args: TTypes[TEventName][]): void {
+    public emit<TEventName extends Extract<keyof TTypes, string>>(eventName: TEventName, ...args: TTypes[TEventName][]): void {
         const registration = this.safelyGetRegistration(eventName);
 
         if (registration.firstArgs === undefined) {
@@ -261,7 +261,7 @@ export class EventEmitter<TTypes = any> implements IEventSubmitter<TTypes> {
      * @param eventName   Name of an event.
      * @returns A Promise to be resolved with the first object passed with the event.
      */
-    public waitFor<TEventName extends keyof TTypes>(eventName: TEventName): Promise<TTypes[TEventName]> {
+    public waitFor<TEventName extends Extract<keyof TTypes, string>>(eventName: TEventName): Promise<TTypes[TEventName]> {
         return new Promise((resolve) => {
             const listener = (arg: TTypes[TEventName]) => {
                 resolve(arg);
@@ -279,7 +279,7 @@ export class EventEmitter<TTypes = any> implements IEventSubmitter<TTypes> {
      * @returns A Promise to be resolve with the first object passed with the first event.
      * @remarks If the event name was already fired, it's immediately resolved with the args from the first event.
      */
-    public waitForFirst<TEventName extends keyof TTypes>(eventName: TEventName): Promise<TTypes[TEventName]> {
+    public waitForFirst<TEventName extends Extract<keyof TTypes, string>>(eventName: TEventName): Promise<TTypes[TEventName]> {
         return new Promise((resolve) => {
             const listener = (arg: TTypes[TEventName]) => {
                 resolve(arg);
@@ -296,7 +296,7 @@ export class EventEmitter<TTypes = any> implements IEventSubmitter<TTypes> {
      * @param eventName   Name of an event.
      * @returns Registrations for the event.
      */
-    private safelyGetRegistration<TEventName extends keyof TTypes>(eventName: TEventName): IRegistration {
+    private safelyGetRegistration<TEventName extends Extract<keyof TTypes, string>>(eventName: TEventName): IRegistration {
         if (this.registrations[eventName] === undefined) {
             this.registrations[eventName] = createNewRegistration();
         }
