@@ -128,6 +128,13 @@ export interface IEventReceiver<TTypes = any> {
     off<TEventName extends Extract<keyof TTypes, string>>(eventName?: TEventName, listener?: (...args: TTypes[TEventName][]) => void): void;
 
     /**
+     * Unbinds/removes an event listener from all the event names.
+     *
+     * @param listener Listener to be removed.
+     */
+    offAny<TEventName extends Extract<keyof TTypes, string>>(listener: (...args: TTypes[TEventName][]) => void): void;
+
+    /**
      * Creates a Promise to be resolved the next time an event is fired.
      *
      * @param eventName   Name of an event.
@@ -225,6 +232,21 @@ export class EventEmitter<TTypes = any> implements IEventSubmitter<TTypes> {
 
         if (!wasInListeners && !wasInFirstOnlyListeners) {
             throw new Error(`Tried to remove a non-existent listener for event name '${eventName}'.`);
+        }
+    }
+
+    /**
+     * Unbinds/removes an event listener from all the event names.
+     *
+     * @param listener Listener to be removed.
+     */
+    public offAny<TEventName extends Extract<keyof TTypes, string>>(listener: (...args: TTypes[TEventName][]) => void): void {
+        removeFromArray(this.anyRegistrations, listener);
+
+        for (const eventName of Object.keys(this.registrations)) {
+            const registration = this.registrations[eventName as TEventName] as IRegistration;
+            removeFromArray(registration.listeners, listener);
+            removeFromArray(registration.firstOnlyListeners, listener);
         }
     }
 

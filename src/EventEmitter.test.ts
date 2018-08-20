@@ -315,6 +315,27 @@ describe("EventEmitter", () => {
         });
     });
 
+    describe("offAny", () => {
+        it("removes the given listener from all events", () => {
+            // Arrange
+            const emitter = new EventEmitter();
+            const firstEventName = "first-event-name";
+            const secondEventName = "second-event-name";
+            const listener = jasmine.createSpy();
+
+            // Act
+            emitter.on(firstEventName, listener);
+            emitter.on(secondEventName, listener);
+            emitter.onAny(listener);
+            emitter.offAny(listener);
+            emitter.emit(firstEventName);
+            emitter.emit(secondEventName);
+
+            // Assert
+            expect(listener).not.toHaveBeenCalled();
+        });
+    });
+
     describe("waitFor", () => {
         it("resolves when the event is fired", async () => {
             // Arrange
