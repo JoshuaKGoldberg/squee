@@ -315,7 +315,7 @@ describe("EventEmitter", () => {
         });
     });
 
-    describe("offany", () => {
+    describe("offAny", () => {
         it("removes the given listener from all events", () => {
             // Arrange
             const emitter = new EventEmitter();
