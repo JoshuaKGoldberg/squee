@@ -102,7 +102,7 @@ Squee also exports an `IEventReceiver` interface that contains all but the `emit
 Use the if you'd like to restrict which application components may send or receive events.
 `EventEmitter` implements the `IEventReceiver` and `IEventSubmitter` interfaces.
 
-Note that until TypeScript supports variadic kinds ([issue here](https://github.com/joshuakgoldberg/squee/issues/5453)), only one type is supported for all arguments.
+Note that until TypeScript supports variadic kinds ([issue here](https://github.com/joshuakgoldberg/squee/issues/3)), only one type is supported for all arguments.
 If you need complex objects it's probably semantically more clear to pass an object with multiple fields anyway.
 
 ## API
