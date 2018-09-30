@@ -69,7 +69,7 @@ type IListenerRegistrations = IListener[];
  *
  * @param args   Any args for the event.
  */
-type IListener = (...args: any[]) => void;
+type IListener = <T extends any[]>(...args: T) => void;
 
 /**
  * Submits application events.
